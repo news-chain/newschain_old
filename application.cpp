@@ -1,26 +1,3 @@
-/*
- * Copyright (c) 2015 Cryptonomex, Inc., and contributors.
- *
- * The MIT License
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
 #include <newt/app/api.hpp>
 #include <newt/app/api_access.hpp>
 #include <newt/app/application.hpp>
@@ -686,64 +663,7 @@ namespace detail {
          });
       } FC_CAPTURE_AND_RETHROW( (id) ) }
 
-      /**
-       * Returns a synopsis of the blockchain used for syncing.  This consists of a list of
-       * block hashes at intervals exponentially increasing towards the genesis block.
-       * When syncing to a peer, the peer uses this data to determine if we're on the same
-       * fork as they are, and if not, what blocks they need to send us to get us on their
-       * fork.
-       *
-       * In the over-simplified case, this is a straighforward synopsis of our current
-       * preferred blockchain; when we first connect up to a peer, this is what we will be sending.
-       * It looks like this:
-       *   If the blockchain is empty, it will return the empty list.
-       *   If the blockchain has one block, it will return a list containing just that block.
-       *   If it contains more than one block:
-       *     the first element in the list will be the hash of the highest numbered block that
-       *         we cannot undo
-       *     the second element will be the hash of an item at the half way point in the undoable
-       *         segment of the blockchain
-       *     the third will be ~3/4 of the way through the undoable segment of the block chain
-       *     the fourth will be at ~7/8...
-       *       &c.
-       *     the last item in the list will be the hash of the most recent block on our preferred chain
-       * so if the blockchain had 26 blocks labeled a - z, the synopsis would be:
-       *    a n u x z
-       * the idea being that by sending a small (<30) number of block ids, we can summarize a huge
-       * blockchain.  The block ids are more dense near the end of the chain where because we are
-       * more likely to be almost in sync when we first connect, and forks are likely to be short.
-       * If the peer we're syncing with in our example is on a fork that started at block 'v',
-       * then they will reply to our synopsis with a list of all blocks starting from block 'u',
-       * the last block they know that we had in common.
-       *
-       * In the real code, there are several complications.
-       *
-       * First, as an optimization, we don't usually send a synopsis of the entire blockchain, we
-       * send a synopsis of only the segment of the blockchain that we have undo data for.  If their
-       * fork doesn't build off of something in our undo history, we would be unable to switch, so there's
-       * no reason to fetch the blocks.
-       *
-       * Second, when a peer replies to our initial synopsis and gives us a list of the blocks they think
-       * we are missing, they only send a chunk of a few thousand blocks at once.  After we get those
-       * block ids, we need to request more blocks by sending another synopsis (we can't just say "send me
-       * the next 2000 ids" because they may have switched forks themselves and they don't track what
-       * they've sent us).  For faster performance, we want to get a fairly long list of block ids first,
-       * then start downloading the blocks.
-       * The peer doesn't handle these follow-up block id requests any different from the initial request;
-       * it treats the synopsis we send as our blockchain and bases its response entirely off that.  So to
-       * get the response we want (the next chunk of block ids following the last one they sent us, or,
-       * failing that, the shortest fork off of the last list of block ids they sent), we need to construct
-       * a synopsis as if our blockchain was made up of:
-       *    1. the blocks in our block chain up to the fork point (if there is a fork) or the head block (if no fork)
-       *    2. the blocks we've already pushed from their fork (if there's a fork)
-       *    3. the block ids they've previously sent us
-       * Segment 3 is handled in the p2p code, it just tells us the number of blocks it has (in
-       * number_of_blocks_after_reference_point) so we can leave space in the synopsis for them.
-       * We're responsible for constructing the synopsis of Segments 1 and 2 from our active blockchain and
-       * fork database.  The reference_point parameter is the last block from that peer that has been
-       * successfully pushed to the blockchain, so that tells us whether the peer is on a fork or on
-       * the main chain.
-       */
+    
       virtual std::vector<item_hash_t> get_blockchain_synopsis(const item_hash_t& reference_point,
                                                                uint32_t number_of_blocks_after_reference_point) override
       { try {
