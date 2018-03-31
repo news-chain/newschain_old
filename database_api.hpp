@@ -134,11 +134,11 @@ struct verify_signatures_return
 };
 
 /**
- * @brief The database_api class implements the RPC API for the chain database.
+ * The database_api class implements the RPC API for the chain database.
  *
  * This API exposes accessors on the database which query state tracked by a blockchain validating node. This API is
  * read-only; all modifications to the database must be performed via transactions. Transactions are broadcast via
- * the @ref network_broadcast_api.
+ * the network_broadcast_api.
  */
 class database_api
 {
@@ -375,7 +375,7 @@ class database_api
 
 
       discussion           get_content( string author, string permlink )const;
-      vector<discussion>   get_content_replies( string parent, string parent_permlink )const;
+      vector<discussion>      get_content_replies( string parent, string parent_permlink, string beginlink = "", uint32_t limit = 0)const;
 
       ///@{ tags API
       /** This API will return the top 1000 tags used by an author sorted by most frequently used */
@@ -443,6 +443,11 @@ class database_api
        *  @param limit - the maximum number of items that can be queried (0 to 1000], must be less than from
        */
       map<uint32_t, applied_operation> get_account_history( string account, uint64_t from, uint32_t limit )const;
+
+        /*
+         *
+         * */
+        map<uint32_t, applied_operation> get_account_history_by_date( string account, uint32_t dateBegin, uint32_t dateEnd)const;
 
       ////////////////////////////
       // Handlers - not exposed //
@@ -549,6 +554,7 @@ FC_API(newt::app::database_api,
    (get_account_count)
    (get_conversion_requests)
    (get_account_history)
+   (get_account_history_by_date)
    (get_owner_history)
    (get_recovery_request)
    (get_escrow)
