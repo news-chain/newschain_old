@@ -111,7 +111,7 @@ Here is how to build and install Boost 1.60 into your user's home directory
 Then the instructions are the same as for steem:
 
     git clone https://github.com/news-chain/newschain
-    cd steem
+    cd newschain
     git submodule update --init --recursive
     mkdir build && cd build
     cmake -DCMAKE_BUILD_TYPE=Release ..
