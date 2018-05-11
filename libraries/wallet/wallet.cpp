@@ -742,7 +742,7 @@ namespace steemit {
                         std::stringstream out;
 
                         auto accounts = result.as<vector<account_api_obj>>();
-                        asset total_steem;
+                        asset total_steem(0, NEWS_SYMBOL);
                         asset total_vest(0, VESTS_SYMBOL);
                         asset total_sbd(0, SBD_SYMBOL);
                         for (const auto &a : accounts) {
