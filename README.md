@@ -117,5 +117,8 @@ Then the instructions are the same as for steem:
     cmake -DCMAKE_BUILD_TYPE=Release ..
     make -j$(nproc) cli_wallet
 
+How to use cli
+	https://github.com/news-chain/newschain/blob/master/doc/cli.md
+
 
 
